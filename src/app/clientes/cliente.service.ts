@@ -27,12 +27,16 @@ getCliente(id): Observable<Cliente>{
   return this.http.get<Cliente>(`${this.urlEndPoint}/${id}`)
 }
 
-  create(cliente: Cliente): Observable<Cliente>{
+create(cliente: Cliente): Observable<Cliente>{
     return this.http.post<Cliente>(this.urlEndPoint, cliente, {headers:this.httpheaders})
   }
 
 update(cliente:Cliente): Observable<Cliente>{
   return this.http.put<Cliente>(`${this.urlEndPoint}/${cliente.id}`, cliente, {headers:this.httpheaders})
+}
+
+delete(id: number): Observable<Cliente>{
+  return this.http.delete<Cliente>(`${this.urlEndPoint}/${id}`, {headers:this.httpheaders})
 }
 
 }
