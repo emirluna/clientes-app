@@ -3,13 +3,14 @@ import { Cliente } from './cliente';
 import { CLIENTES } from './clientes.json';
 import { Observable } from 'rxjs';
 import { of } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 
 @Injectable()
 export class ClienteService {
 
   private urlEndPoint:string = 'http://localhost:8080/api/clientes';
+  private   httpheaders = new HttpHeaders({'Content-Type': 'application/json'})
 
   constructor(private http: HttpClient) { }
 
@@ -20,4 +21,11 @@ export class ClienteService {
   //map((response) => response as Cliente[])
 //);
   }
+
+
+  create(cliente: Cliente): Observable<Cliente>{
+    return this.http.post<Cliente>(this.urlEndPoint, cliente, {headers:this.httpheaders})
+  }
+
+
 }
