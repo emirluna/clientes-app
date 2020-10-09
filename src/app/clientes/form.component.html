@@ -2,11 +2,20 @@
   <div class="card-header">{{ titulo }}</div>
     <div class="card-body">
 
-      <form>
+      <form #f="ngForm">
         <div class="form-group row">
           <label for="name" class="col-form-label col-sm-2">Name</label>
           <div class="col-sm-6">
-            <input type="text" class="form-control" [(ngModel)]="cliente.name" [ngModelOptions]="{standalone: true}">
+            <input type="text" class="form-control" [(ngModel)]="cliente.name"
+            name="name" required minlength="4" #name="ngModel">
+            <div class="alert alert-danger" *ngIf="name.invalid && (name.dirty || name.touched)">
+              <div *ngIf="name.errors.required">
+                Nombre es requerido
+              </div>
+              <div *ngIf="name.errors.minlength">
+                Nombre debe tener al menos 4 caracteres
+              </div>
+            </div>
           </div>
         </div>
 
@@ -14,7 +23,12 @@
         <div class="form-group row">
           <label for="lastName" class="col-form-label col-sm-2">Last Name</label>
           <div class="col-sm-6">
-            <input type="text" class="form-control" [(ngModel)]="cliente.lastName" [ngModelOptions]="{standalone: true}">
+            <input type="text" class="form-control" [(ngModel)]="cliente.lastName" name="lastName" required #lastName="ngModel">
+            <div class="alert alert-danger" *ngIf="lastName.invalid && (lastName.dirty || lastName.touched)">
+              <div *ngIf="lastName.errors.required">
+                Apellido es requerido
+              </div>
+            </div>
           </div>
         </div>
 
@@ -22,21 +36,27 @@
         <div class="form-group row">
           <label for="email" class="col-form-label col-sm-2">Email</label>
           <div class="col-sm-6">
-            <input type="text" class="form-control" [(ngModel)]="cliente.email" [ngModelOptions]="{standalone: true}">
-          </div>
-        <div>
-
-        <div class="from-group-row">
-          <div class="col-sm-6">
-            <button class="btn btn-primary" role="button" (click)="create()"
-            *ngIf="!cliente.id else elseBlock"> Crear </button>
-
-              <ng-template #elseBlock>
-                <button class="btn btn-primary" role="button" (click)="update()"> Actualizar </button>
-              </ng-template>
-
+            <input type="text" class="form-control" [(ngModel)]="cliente.email" name="email" required email #email="ngModel">
+            <div class="alert alert-danger" *ngIf="email.invalid && (email.dirty || email.touched)">
+              <div *ngIf="email.errors.required">
+                Emial es requerido
+              </div>
+              <div *ngIf="email.errors.email">
+                El Email debe ser vali+do
+              </div>
+            </div>
           </div>
         </div>
 
+        <div class="from-group-row">
+          <div class="col-sm-6">
+            <button class="btn btn-primary" role="button" (click)="create()" *ngIf="!cliente.id else elseBlock" [disabled]="!f.form.valid"> Crear </button>
+
+              <ng-template #elseBlock>
+                <button class="btn btn-primary" role="button" (click)="update()" [disabled]="!f.form.valid"> Actualizar </button>
+              </ng-template>
+          </div>
+        </div>
+    </form>
   </div>
 </div>

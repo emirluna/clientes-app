@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Cliente } from './cliente';
 import { Router, ActivatedRoute } from  '@angular/router';
 import { ClienteService } from './cliente.service';
+import { NgForm } from '@angular/forms';
 import swal from 'sweetalert2';
 
 @Component({
