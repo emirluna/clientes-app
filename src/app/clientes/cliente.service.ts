@@ -6,6 +6,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map, catchError } from 'rxjs/operators';
 import swal from 'sweetalert2';
 import { Router } from '@angular/router';
+import { formatDate } from '@angular/common';
 
 @Injectable()
 export class ClienteService {
@@ -16,11 +17,18 @@ export class ClienteService {
   constructor(private http: HttpClient, private router: Router) { }
 
   getClientes(): Observable<Cliente[]> {
-    //return of(CLIENTES);
-      return this.http.get<Cliente[]>(this.urlEndPoint);
-//return this.http.get(this.urlEndPoint).pipe(
-  //map((response) => response as Cliente[])
-//);
+  //return this.http.get<Cliente[]>(this.urlEndPoint);
+    return this.http.get(this.urlEndPoint).pipe(
+      map(response => {
+        let clientes  = response as Cliente[];
+        return clientes.map(cliente => {
+          cliente.name = cliente.name.toUpperCase();
+          cliente.lastName = cliente.lastName.toUpperCase();
+          cliente.createAt = formatDate(cliente.createAt, 'dd/MM/yyyy', 'en-US');
+          return cliente;
+        });
+      })
+    );
   }
 
 
