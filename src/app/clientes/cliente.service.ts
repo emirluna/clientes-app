@@ -22,9 +22,9 @@ export class ClienteService {
       map(response => {
         let clientes  = response as Cliente[];
         return clientes.map(cliente => {
-          cliente.name = cliente.name.toUpperCase();
-          cliente.lastName = cliente.lastName.toUpperCase();
-          cliente.createAt = formatDate(cliente.createAt, 'dd/MM/yyyy', 'en-US');
+        //  cliente.name = cliente.name.toUpperCase();
+        //  cliente.lastName = cliente.lastName.toUpperCase();
+        //  cliente.createAt = formatDate(cliente.createAt, 'dd/MM/yyyy', 'en-US');
           return cliente;
         });
       })
