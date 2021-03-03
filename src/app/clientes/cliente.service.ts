@@ -16,6 +16,16 @@ export class ClienteService {
 
   constructor(private http: HttpClient, private router: Router) { }
 
+  private isNotAuthorized(e):boolean{
+    if(e.status==401 || e.status==403){
+      this.router.navigate(['/login'])
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+
   getClientes(page: number): Observable<any> {
     return this.http.get(this.urlEndPoint+ '/page/' + page).pipe(
     map((response: any) => {
@@ -24,6 +34,11 @@ export class ClienteService {
         });
         return response;
       }),
+      catchError(e => {
+        if(this.isNotAuthorized(e)){
+          return throwError(e);
+        }
+      })
     );
   }
 
@@ -31,10 +46,15 @@ export class ClienteService {
 getCliente(id): Observable<Cliente>{
   return this.http.get<Cliente>(`${this.urlEndPoint}/${id}`).pipe(
     catchError(e => {
+      if(this.isNotAuthorized(e)){
+        return throwError(e);
+      }
+
       this.router.navigate(['/clientes']);
       console.error(e.error.mensaje)
       swal.fire('Error al obtener ', e.error.mensaje, 'error');
       return throwError(e);
+      
     })
   );
 }
@@ -42,6 +62,11 @@ getCliente(id): Observable<Cliente>{
 create(cliente: Cliente): Observable<Cliente>{
     return this.http.post<Cliente>(this.urlEndPoint, cliente, {headers:this.httpheaders}).pipe(
         catchError(e => {
+
+
+          if(this.isNotAuthorized(e)){
+            return throwError(e);
+          }
 
             if(e.status==400){
               return throwError(e);
@@ -58,6 +83,11 @@ update(cliente:Cliente): Observable<Cliente>{
   return this.http.put<Cliente>(`${this.urlEndPoint}/${cliente.id}`, cliente, {headers:this.httpheaders}).pipe(
     catchError(e => {
 
+      if(this.isNotAuthorized(e)){
+        return throwError(e);
+      }
+
+
       if(e.status==400){
         return throwError(e);
       }
@@ -72,6 +102,11 @@ update(cliente:Cliente): Observable<Cliente>{
 delete(id: number): Observable<Cliente>{
   return this.http.delete<Cliente>(`${this.urlEndPoint}/${id}`, {headers:this.httpheaders}).pipe(
     catchError(e => {
+
+      if(this.isNotAuthorized(e)){
+        return throwError(e);
+      }
+
         console.error(e.error.mensaje)
         swal.fire('Error al eliminar cliente', e.error.mensaje, 'error');
         return throwError(e);
