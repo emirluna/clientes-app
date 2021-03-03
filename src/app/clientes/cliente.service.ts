@@ -11,31 +11,19 @@ import { formatDate } from '@angular/common';
 @Injectable()
 export class ClienteService {
 
-  private urlEndPoint:string = 'http://localhost:8080/api/clientes';
+  private urlEndPoint:string = 'http://localhost:8090/api/clientes';
   private   httpheaders = new HttpHeaders({'Content-Type': 'application/json'})
 
   constructor(private http: HttpClient, private router: Router) { }
 
   getClientes(page: number): Observable<any> {
     return this.http.get(this.urlEndPoint+ '/page/' + page).pipe(
-      tap((response: any) => {
-        console.log('ClienteService: tap 1');
-        (response.content as Cliente[]).forEach(cliente => console.log(cliente.name));
-      }),
-      map((response: any) => {
+    map((response: any) => {
         (response.content as Cliente[]).map(cliente => {
-          cliente.name = cliente.name.toUpperCase();
-          //let datePipe = new DatePipe('es');
-          //cliente.createAt = datePipe.transform(cliente.createAt, 'EEEE dd, MMMM yyyy');
-          //cliente.createAt = formatDate(cliente.createAt, 'dd-MM-yyyy', 'es');
           return cliente;
         });
         return response;
       }),
-      tap(response => {
-        console.log('ClienteService: tap 2');
-        (response.content as Cliente[]).forEach(cliente => console.log(cliente.name));
-      })
     );
   }
 
