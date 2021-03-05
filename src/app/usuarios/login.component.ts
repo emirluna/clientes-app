@@ -30,9 +30,12 @@ export class LoginComponent implements OnInit {
     }
 
     this.authService.login(this.usuario).subscribe(response => {
-      console.log(response);
+      this.authService.guardarToken(response.access_token);
+      this.authService.guardarUsuario(response.access_token);
+      
+      let usuario = this.authService.usuario;
       this.router.navigate(['/clientes']);
-      swal.fire('Login', `Hola ${response.username}, has iniciado sesión`, 'success');
+      swal.fire('Login', `Hola ${usuario.username}, has iniciado sesión`, 'success');
       });
     }
 }
