@@ -74,6 +74,24 @@ public get token(): string{
 }
 
 
+isAuthenticated(): boolean{
+  let payload = this.obtenerToken(this.token);
+  if(payload != null && payload.user_name && payload.user_name.length>0){
+    return true;
+  }
+  return false;
+}
+
+
+
+logout():void{
+  this._token = null;
+  this._usuario = null;
+
+  sessionStorage.clear();
+  sessionStorage.removeItem('token');
+  sessionStorage.removeItem('usuario');
+}
 
 
 }
