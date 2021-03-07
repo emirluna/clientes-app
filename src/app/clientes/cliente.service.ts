@@ -7,6 +7,7 @@ import { map, catchError, tap } from 'rxjs/operators';
 import swal from 'sweetalert2';
 import { Router } from '@angular/router';
 import { formatDate } from '@angular/common';
+import { AuthService } from '../usuarios/auth.service';
 
 @Injectable()
 export class ClienteService {
@@ -14,7 +15,9 @@ export class ClienteService {
   private urlEndPoint:string = 'http://localhost:8090/api/clientes';
   private   httpheaders = new HttpHeaders({'Content-Type': 'application/json'})
 
-  constructor(private http: HttpClient, private router: Router) { }
+  constructor(private http: HttpClient, 
+              private router: Router,
+              private authService: AuthService) { }
 
   private isNotAuthorized(e):boolean{
     if(e.status==401 || e.status==403){
@@ -23,6 +26,15 @@ export class ClienteService {
     }else{
       return false;
     }
+  }
+
+
+  private agregarAuthorizationHeader(){
+    let token = this.authService.token;
+    if(token != null){
+      return this.httpheaders.append('Authorization', 'Bearer '+ token);
+    }
+    return this.httpheaders;
   }
 
 
@@ -44,7 +56,7 @@ export class ClienteService {
 
 
 getCliente(id): Observable<Cliente>{
-  return this.http.get<Cliente>(`${this.urlEndPoint}/${id}`).pipe(
+  return this.http.get<Cliente>(`${this.urlEndPoint}/${id}`, {headers: this.agregarAuthorizationHeader()}).pipe(
     catchError(e => {
       if(this.isNotAuthorized(e)){
         return throwError(e);
@@ -60,7 +72,7 @@ getCliente(id): Observable<Cliente>{
 }
 
 create(cliente: Cliente): Observable<Cliente>{
-    return this.http.post<Cliente>(this.urlEndPoint, cliente, {headers:this.httpheaders}).pipe(
+    return this.http.post<Cliente>(this.urlEndPoint, cliente, {headers: this.agregarAuthorizationHeader()}).pipe(
         catchError(e => {
 
 
@@ -80,7 +92,7 @@ create(cliente: Cliente): Observable<Cliente>{
   }
 
 update(cliente:Cliente): Observable<Cliente>{
-  return this.http.put<Cliente>(`${this.urlEndPoint}/${cliente.id}`, cliente, {headers:this.httpheaders}).pipe(
+  return this.http.put<Cliente>(`${this.urlEndPoint}/${cliente.id}`, cliente, {headers: this.agregarAuthorizationHeader()}).pipe(
     catchError(e => {
 
       if(this.isNotAuthorized(e)){
@@ -100,7 +112,7 @@ update(cliente:Cliente): Observable<Cliente>{
 }
 
 delete(id: number): Observable<Cliente>{
-  return this.http.delete<Cliente>(`${this.urlEndPoint}/${id}`, {headers:this.httpheaders}).pipe(
+  return this.http.delete<Cliente>(`${this.urlEndPoint}/${id}`, {headers: this.agregarAuthorizationHeader()}).pipe(
     catchError(e => {
 
       if(this.isNotAuthorized(e)){
