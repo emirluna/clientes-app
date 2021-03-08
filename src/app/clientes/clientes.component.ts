@@ -3,6 +3,7 @@ import { Cliente } from './cliente';
 import { ClienteService } from './cliente.service';
 import { tap } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
+import { AuthService } from '../usuarios/auth.service';
 
 import swal from 'sweetalert2';
 
@@ -18,7 +19,8 @@ paginador: any;
 
 
   constructor(private clienteService: ClienteService,
-    private activatedRoute: ActivatedRoute) { }
+              private activatedRoute: ActivatedRoute,
+              public authService: AuthService) { }
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(params => {
