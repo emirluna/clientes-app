@@ -21,6 +21,12 @@ export class ClienteService {
 
   private isNotAuthorized(e):boolean{
     if(e.status==401){
+
+      if(this.authService.isAuthenticated()){
+        swal.fire('Sesión expirada', `${this.authService.usuario.username} vuelva a ingresar sus credenciales para continuar`, 'info')
+        this.authService.logout();
+      }
+
       this.router.navigate(['/login'])
       return true;
     }
