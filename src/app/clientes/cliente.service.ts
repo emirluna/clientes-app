@@ -1,13 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Cliente } from './cliente';
-import { CLIENTES } from './clientes.json';
-import { of, Observable, throwError } from 'rxjs';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { map, catchError, tap } from 'rxjs/operators';
-import swal from 'sweetalert2';
+import { Observable, throwError } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { map, catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { formatDate } from '@angular/common';
-import { AuthService } from '../usuarios/auth.service';
 
 @Injectable()
 export class ClienteService {
@@ -15,32 +11,9 @@ export class ClienteService {
   private urlEndPoint:string = 'http://localhost:8090/api/clientes';
   
   constructor(private http: HttpClient, 
-              private router: Router,
-              private authService: AuthService) { }
+              private router: Router) { }
 
-  private isNotAuthorized(e):boolean{
-    if(e.status==401){
-
-      if(this.authService.isAuthenticated()){
-        swal.fire('Sesión expirada', `${this.authService.usuario.username} vuelva a ingresar sus credenciales para continuar`, 'info')
-        this.authService.logout();
-      }
-
-      this.router.navigate(['/login'])
-      return true;
-    }
-    
-    
-    if(e.status==403){
-      swal.fire('Acceso denegado', `${this.authService.usuario.username} no tienes lo permisos para acceder este recurso`,  'warning');
-      this.router.navigate(['/clientes'])
-      return true;
-    }
-     
-    return false;
-    
-  }
-
+  
 
 
   getClientes(page: number): Observable<any> {
@@ -50,11 +23,6 @@ export class ClienteService {
           return cliente;
         });
         return response;
-      }),
-      catchError(e => {
-        if(this.isNotAuthorized(e)){
-          return throwError(e);
-        }
       })
     );
   }
@@ -62,14 +30,11 @@ export class ClienteService {
 
 getCliente(id): Observable<Cliente>{
   return this.http.get<Cliente>(`${this.urlEndPoint}/${id}`).pipe(
-    catchError(e => {
-      if(this.isNotAuthorized(e)){
-        return throwError(e);
-      }
+    catchError(e => {      
 
       this.router.navigate(['/clientes']);
       console.error(e.error.mensaje)
-      swal.fire('Error al obtener ', e.error.mensaje, 'error');
+      //swal.fire('Error al obtener ', e.error.mensaje, 'error');
       return throwError(e);
       
     })
@@ -79,18 +44,12 @@ getCliente(id): Observable<Cliente>{
 create(cliente: Cliente): Observable<Cliente>{
     return this.http.post<Cliente>(this.urlEndPoint, cliente).pipe(
         catchError(e => {
-
-
-          if(this.isNotAuthorized(e)){
-            return throwError(e);
-          }
-
             if(e.status==400){
               return throwError(e);
             }
 
             console.error(e.error.mensaje)
-            swal.fire('Error al crear cliente', e.error.mensaje, 'error');
+        //    swal.fire('Error al crear cliente', e.error.mensaje, 'error');
             return throwError(e);
         })
     );
@@ -100,17 +59,12 @@ update(cliente:Cliente): Observable<Cliente>{
   return this.http.put<Cliente>(`${this.urlEndPoint}/${cliente.id}`, cliente).pipe(
     catchError(e => {
 
-      if(this.isNotAuthorized(e)){
-        return throwError(e);
-      }
-
-
       if(e.status==400){
         return throwError(e);
       }
 
         console.error(e.error.mensaje)
-        swal.fire('Error al actualizar cliente', e.error.mensaje, 'error');
+        //swal.fire('Error al actualizar cliente', e.error.mensaje, 'error');
         return throwError(e);
     })
   );
@@ -119,13 +73,8 @@ update(cliente:Cliente): Observable<Cliente>{
 delete(id: number): Observable<Cliente>{
   return this.http.delete<Cliente>(`${this.urlEndPoint}/${id}`).pipe(
     catchError(e => {
-
-      if(this.isNotAuthorized(e)){
-        return throwError(e);
-      }
-
         console.error(e.error.mensaje)
-        swal.fire('Error al eliminar cliente', e.error.mensaje, 'error');
+//        swal.fire('Error al eliminar cliente', e.error.mensaje, 'error');
         return throwError(e);
     })
   );
